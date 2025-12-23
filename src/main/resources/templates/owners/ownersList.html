@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html xmlns:th="https://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'owners')}">
+
+<body>
+
+  <h2 th:text="#{owners}">Owners</h2>
+
+  <div class="owner-list-toolbar d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 mb-3">
+    <div class="text-muted small" th:if="${totalItems > 0}"
+      th:text="#{owners.pagination.summary(${startItem}, ${endItem}, ${totalItems})}">Showing 1-10 of 42</div>
+    <form class="d-flex align-items-center gap-2" th:action="@{/owners}" method="get">
+      <input type="hidden" name="page" value="1" />
+      <input type="hidden" name="lastName" th:value="${owner.lastName}" />
+      <label class="form-label mb-0 small" for="pageSize" th:text="#{owners.pageSize.label}">Page Row</label>
+      <select id="pageSize" name="size" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option th:each="option : ${pageSizeOptions}" th:value="${option}" th:selected="${option == pageSize}"
+          th:text="${option}">10</option>
+      </select>
+      <noscript>
+        <button type="submit" class="btn btn-primary btn-sm" th:text="#{owners.pageSize.submit}">Apply</button>
+      </noscript>
+    </form>
+  </div>
+
+  <table id="owners" class="table table-striped">
+    <thead>
+      <tr>
+        <th th:text="#{name}" style="width: 150px;">Name</th>
+        <th th:text="#{address}" style="width: 200px;">Address</th>
+        <th th:text="#{city}">City</th>
+        <th th:text="#{telephone}" style="width: 120px">Telephone</th>
+        <th th:text="#{pets}">Pets</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="owner : ${listOwners}">
+        <td>
+          <a th:href="@{/owners/__${owner.id}__}" th:text="${owner.firstName + ' ' + owner.lastName}" /></a>
+        </td>
+        <td th:text="${owner.address}" />
+        <td th:text="${owner.city}" />
+        <td th:text="${owner.telephone}" />
+        <td><span th:text="${#strings.listJoin(owner.pets, ', ')}" /></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="owner-list-pagination d-flex flex-column flex-lg-row align-items-lg-center justify-content-lg-between gap-3 mt-4"
+    th:if="${totalPages > 1}">
+    <div class="text-muted small" th:text="#{owners.pagination.summary(${startItem}, ${endItem}, ${totalItems})}">
+      Showing 1-10 of 42
+    </div>
+    <nav class="flex-grow-1" aria-label="Owners pagination">
+      <ul class="pagination justify-content-lg-end justify-content-center mb-0">
+        <li class="page-item" th:classappend="${currentPage == 1} ? ' disabled'">
+          <a class="page-link" th:href="@{/owners(page=1, size=${pageSize}, lastName=${owner.lastName})}"
+            th:title="#{first}" aria-label="First">
+            <span class="fa fa-fast-backward" aria-hidden="true"></span>
+            <span class="visually-hidden" th:text="#{first}">First</span>
+          </a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == 1} ? ' disabled'">
+          <a class="page-link"
+            th:href="@{/owners(page=${currentPage - 1}, size=${pageSize}, lastName=${owner.lastName})}"
+            th:title="#{previous}" aria-label="Previous">
+            <span class="fa fa-step-backward" aria-hidden="true"></span>
+            <span class="visually-hidden" th:text="#{previous}">Previous</span>
+          </a>
+        </li>
+        <li class="page-item disabled" th:if="${showLeadingGap}">
+          <span class="page-link" aria-hidden="true" th:text="#{owners.pagination.ellipsis}"></span>
+        </li>
+        <li class="page-item" th:each="i : ${pageNumbers}" th:classappend="${currentPage == i} ? ' active'">
+          <a class="page-link" th:href="@{/owners(page=${i}, size=${pageSize}, lastName=${owner.lastName})}"
+            th:text="${i}" th:aria-current="${currentPage == i} ? 'page' : null"></a>
+        </li>
+        <li class="page-item disabled" th:if="${showTrailingGap}">
+          <span class="page-link" aria-hidden="true" th:text="#{owners.pagination.ellipsis}"></span>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? ' disabled'">
+          <a class="page-link"
+            th:href="@{/owners(page=${currentPage + 1}, size=${pageSize}, lastName=${owner.lastName})}" th:title="#{next}"
+            aria-label="Next">
+            <span class="fa fa-step-forward" aria-hidden="true"></span>
+            <span class="visually-hidden" th:text="#{next}">Next</span>
+          </a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages} ? ' disabled'">
+          <a class="page-link" th:href="@{/owners(page=${totalPages}, size=${pageSize}, lastName=${owner.lastName})}"
+            th:title="#{last}" aria-label="Last">
+            <span class="fa fa-fast-forward" aria-hidden="true"></span>
+            <span class="visually-hidden" th:text="#{last}">Last</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</body>
+
+</html>
